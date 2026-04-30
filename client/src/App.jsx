@@ -31,7 +31,7 @@ function App() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Jenkins Full Stack Project </h1>
+      <h1>Jenkins Full Stack Project Pipeline</h1>
       <h1>- By Satyanarayan Sen</h1>
 
       <button onClick={checkConnection} style={btnStyle}>
