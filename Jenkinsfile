@@ -10,12 +10,6 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
-            steps {
-                git 'https://github.com/Satyanarayan4434/jenkins-project.git'
-            }
-        }
-
         stage('Build Server Image') {
             steps {
                 dir('server') {
