@@ -1,24 +1,68 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_USER = "satyanarayan4434"
+        CLIENT_IMAGE = "satyanarayan4434/jenkins-client"
+        SERVER_IMAGE = "satyanarayan4434/jenkins-server"
+        EC2_IP = "15.207.235.213"
+    }
+
     stages {
 
-        stage('Clone') {
+        stage('Clone Code') {
             steps {
-                git 'https://github.com/your-username/Jenkins-Project.git'
+                git 'https://github.com/Satyanarayan4434/jenkins-project.git'
             }
         }
 
-        stage('Build') {
+        stage('Build Server Image') {
             steps {
-                sh 'docker-compose build'
+                dir('server') {
+                    sh 'docker build -t $SERVER_IMAGE .'
+                }
+            }
+        }
+
+        stage('Build Client Image') {
+            steps {
+                dir('client') {
+                    sh '''
+                    docker build \
+                    --build-arg VITE_API_URL=http://$EC2_IP:3000 \
+                    -t $CLIENT_IMAGE .
+                    '''
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    docker push $SERVER_IMAGE
+                    docker push $CLIENT_IMAGE
+                    '''
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                sh 'docker-compose down || true'
-                sh 'docker-compose up -d'
+                sh '''
+                docker stop server || true
+                docker rm server || true
+                docker stop client || true
+                docker rm client || true
+
+                docker run -d -p 3000:3000 --name server $SERVER_IMAGE
+                docker run -d -p 80:80 --name client $CLIENT_IMAGE
+                '''
             }
         }
     }
