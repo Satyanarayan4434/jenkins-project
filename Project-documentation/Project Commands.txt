@@ -1,0 +1,44 @@
+sudo yum update -y
+
+=====================Clone and Push to GitHub=====================
+git clone https://github.com/Satyanarayan4434/jenkins-project.git
+cd jenkins-project
+===================================================================
+
+=============== Install and Enable Docker ===========================
+sudo yum install docker -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker ec2-user
+=====================================================================
+
+================== Install Git and Check Git Version ================
+sudo yum install git -y
+git --version
+=====================================================================
+
+================= Install Java Development Kit ======================
+sudo yum install java-21-amazon-corretto -y
+java -version
+=====================================================================
+
+==================Install Jenkins====================================
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+sudo yum install jenkins -y
+
+sudo systemctl daemon-reexec
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+
+sudo usermod -aG docker jenkins
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+======================================================================
+
+
+
+
